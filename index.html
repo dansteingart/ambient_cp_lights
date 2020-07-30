@@ -1,0 +1,64 @@
+<html>
+<head>
+  <script src="/static/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+  <input id='ins' value = "0,0,0">
+  <div id="slidecontainer">
+  r: <input type="range" min="0" max="255" value="0" class="slider" id="rs"><br>
+  g: <input type="range" min="0" max="255" value="0" class="slider" id="gs"><br>
+  b: <input type="range" min="0" max="255" value="0" class="slider" id="bs"><br>
+</div>
+
+<div id='send'></div>
+
+<script>
+foo = undefined
+last = 0
+ready = true;
+  function out(top)
+  {
+    foo = top
+    if (Date.now() - last > 50)
+    {
+      ready = false;
+      if (top.id == "ins")
+      {
+        r = top.value.split(",")[0];
+        g = top.value.split(",")[1];
+        b = top.value.split(",")[2];
+      }
+      else
+      {
+        r = $("#rs").val()
+        g = $("#gs").val()
+        b = $("#bs").val()
+      }
+
+      $("#rs").val(r)
+      $("#gs").val(g)
+      $("#bs").val(b)
+
+      $('#ins').val(r+","+g+","+b)
+      val = $("#ins").val()
+      $("#send").html(val)
+      console.log(val)
+      $.post("/lights/",{'light':val}).done(function(){ready= true;})
+      last = Date.now();
+    }
+  }
+  $("#foo").html("inject son")
+  //$("#ins").change(function(){out()})
+  clicked = false;
+  $(':input').change(function(){out(this)})
+  $('#slidecontainer :input')
+    .mousedown(function(){clicked = true;})
+    .mousemove(function(){if (clicked) out(this)})
+    .mouseup(function(){clicked = false;})
+
+
+
+</script>
+</body>
+
+</html>
